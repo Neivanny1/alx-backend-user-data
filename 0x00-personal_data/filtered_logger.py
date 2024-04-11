@@ -25,6 +25,11 @@ def filter_datum(
 
 
 def get_logger() -> logging.Logger:
+    '''
+    get_logger function that takes no arguments and returns a logging.Logger object.
+    The logger should be named "user_data" and only log up to logging.INFO level.
+    It should not propagate messages to other loggers.
+    It should have a StreamHandler with RedactingFormatter as formatter.
     logger = logging.getLogger("user_data")
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
@@ -32,6 +37,7 @@ def get_logger() -> logging.Logger:
     logger.propagate = False
     logger.addHandler(stream_handler)
     return logger
+    '''
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
