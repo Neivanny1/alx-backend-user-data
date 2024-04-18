@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-""" Module of Users views
+"""
+Module of Users views
 """
 from api.v1.views import app_views
 from flask import abort, jsonify, request
@@ -8,7 +9,8 @@ from models.user import User
 
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
 def view_all_users() -> str:
-    """ GET /api/v1/users
+    """
+    GET /api/v1/users
     Return:
       - list of all User objects JSON represented
     """
@@ -18,15 +20,19 @@ def view_all_users() -> str:
 
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
 def view_one_user(user_id: str = None) -> str:
-    """ GET /api/v1/users/:id
+    """
+    GET /api/v1/users/:id
     Path parameter:
       - User ID
     Return:
       - User object JSON represented
       - 404 if the User ID doesn't exist
     """
-    if user_id is None:
+    if user_id == 'me' and user_id is None:
         abort(404)
+    elif user_id == 'me' and request.current_user:
+        return jsonify(request.current_user.to_json())
+
     user = User.get(user_id)
     if user is None:
         abort(404)
@@ -35,7 +41,8 @@ def view_one_user(user_id: str = None) -> str:
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user(user_id: str = None) -> str:
-    """ DELETE /api/v1/users/:id
+    """
+    DELETE /api/v1/users/:id
     Path parameter:
       - User ID
     Return:
@@ -53,7 +60,8 @@ def delete_user(user_id: str = None) -> str:
 
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
 def create_user() -> str:
-    """ POST /api/v1/users/
+    """
+    POST /api/v1/users/
     JSON body:
       - email
       - password
@@ -91,7 +99,8 @@ def create_user() -> str:
 
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id: str = None) -> str:
-    """ PUT /api/v1/users/:id
+    """
+    PUT /api/v1/users/:id
     Path parameter:
       - User ID
     JSON body:

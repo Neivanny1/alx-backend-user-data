@@ -1,53 +1,48 @@
 #!/usr/bin/env python3
 """
-Authentication module for the API.
+manage API authentication
 """
-import os
-import re
-from typing import List, TypeVar
+
+
 from flask import request
+from typing import List, TypeVar
+from os import getenv
 
 
 class Auth:
     """
-    Authentication class.
+    manage API authentication
     """
+
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        Checks if a path requires authentication.
+        Check if path is in the list of excluded paths
         """
-        if path is not None and excluded_paths is not None:
-            for exclusion_path in map(lambda x: x.strip(), excluded_paths):
-                pattern = ''
-                if exclusion_path[-1] == '*':
-                    pattern = '{}.*'.format(exclusion_path[0:-1])
-                elif exclusion_path[-1] == '/':
-                    pattern = '{}/*'.format(exclusion_path[0:-1])
-                else:
-                    pattern = '{}/*'.format(exclusion_path)
-                if re.match(pattern, path):
-                    return False
+        if not path or not excluded_paths:
+            return True
+        if path[-1] != '/':
+            path += '/'
+        for p in excluded_paths:
+            if path[:p.find('*')] in p[:p.find('*')]:
+                return False
         return True
 
     def authorization_header(self, request=None) -> str:
+        """Return authorization header
         """
-        Gets the authorization header field from the request.
-        """
-        if request is not None:
-            return request.headers.get('Authorization', None)
-        return None
+        if not request:
+            return None
+        return request.headers.get('Authorization')
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
-        :param request:
-        :return: none
+        Return None
         """
         return None
 
-    def session_cookie(self, request=None) -> str:
+    def session_cookie(self, request=None):
         """
-        Returns a cookie value from a request
+        Return a cookie value from a request
         """
-        if request is not None:
-            cookie_name = os.getenv('SESSION_NAME')
-            return request.cookies.get(cookie_name)
+        if request:
+            return request.cookies.get(getenv('SESSION_NAME'))
